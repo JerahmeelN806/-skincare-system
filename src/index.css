@@ -1,0 +1,16 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body { @apply m-0 bg-cream font-body text-ink antialiased; }
+  button, input { font: inherit; }
+}
+
+@layer utilities {
+  .hero-copy-line { overflow: hidden; }
+  .hero-copy-line > span { display: block; }
+}
