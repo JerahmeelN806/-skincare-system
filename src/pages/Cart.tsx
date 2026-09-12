@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { formatNaira } from '../data/products'
 import { getCartSubtotal, getCartTotalItems, useCartStore } from '../store/cartStore'
 
@@ -9,9 +9,25 @@ function TrashIcon() { return <svg viewBox="0 0 24 24" className="h-5 w-5" fill=
 
 export function Cart() {
   const { items, removeItem, updateQuantity } = useCartStore()
-  const [paymentMethod, setPaymentMethod] = useState<'card' | null>(null)
+  const [paymentMethod, setPaymentMethod] = useState<'card' | 'bank' | null>(null)
+  const navigate = useNavigate()
   const subtotal = getCartSubtotal(items)
   const totalItems = getCartTotalItems(items)
+
+  useEffect(() => {
+    const continueToCheckout = (event: MouseEvent) => {
+      const button = (event.target as Element).closest('button')
+      if (button?.textContent === 'Proceed to Checkout' && paymentMethod) navigate('/checkout')
+      const paymentOption = (event.target as Element).closest('div')
+      if (paymentOption?.textContent?.includes('Bank Transfer')) setPaymentMethod('bank')
+    }
+    document.addEventListener('click', continueToCheckout)
+    return () => document.removeEventListener('click', continueToCheckout)
+  }, [navigate, paymentMethod])
+
+  useEffect(() => {
+    if (window.location.hash === '#payment') Array.from(document.querySelectorAll('h2')).find((heading) => heading.textContent === 'Payment Method')?.closest('section')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+  }, [])
 
   if (!items.length) return <main className="grid min-h-[58vh] place-items-center bg-cream px-5 py-16"><div className="max-w-md text-center"><div className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-sage/10 text-sage"><svg viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true"><path d="M5 8h14l-1 12H6L5 8Z" /><path d="M9 9V6a3 3 0 0 1 6 0v3" /></svg></div><h1 className="mt-6 font-display text-4xl font-extrabold tracking-[-0.05em] text-ink">Your Cart is Empty</h1><p className="mt-3 leading-7 text-ink/60">Your skincare favourites are waiting for you.</p><Link to="/products" className="mt-7 inline-flex items-center gap-2 rounded-full bg-sage px-6 py-3.5 text-sm font-semibold text-white transition hover:bg-sage/90">Continue Shopping <span aria-hidden="true">→</span></Link></div></main>
 

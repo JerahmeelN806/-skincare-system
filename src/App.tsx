@@ -10,10 +10,11 @@ import { Products } from './pages/Products'
 import { Login } from './pages/Login'
 import { Register } from './pages/Register'
 import { Cart } from './pages/Cart'
+import { Checkout } from './pages/Checkout'
 import { Route, Routes } from 'react-router-dom'
 
 function App() {
-  return <div className="min-h-screen overflow-hidden bg-cream"><PromoBanner /><Header /><Routes><Route path="/" element={<main><Hero /><FeaturedProducts /><PromoBanners /><BrandMission /></main>} /><Route path="/products" element={<Products />} /><Route path="/products/:id" element={<ProductDetail />} /><Route path="/cart" element={<Cart />} /><Route path="/login" element={<Login />} /><Route path="/register" element={<Register />} /></Routes><Footer /></div>
+  return <div className="min-h-screen overflow-hidden bg-cream"><PromoBanner /><Header /><Routes><Route path="/" element={<main><Hero /><FeaturedProducts /><PromoBanners /><BrandMission /></main>} /><Route path="/products" element={<Products />} /><Route path="/products/:id" element={<ProductDetail />} /><Route path="/cart" element={<Cart />} /><Route path="/checkout" element={<Checkout />} /><Route path="/login" element={<Login />} /><Route path="/register" element={<Register />} /></Routes><Footer /></div>
 }
 
 export default App
