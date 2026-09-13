@@ -1,17 +1,17 @@
-import { useLayoutEffect, useRef } from 'react'
+import { useEffect, useLayoutEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import { gsap } from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import { Link } from 'react-router-dom'
 import { ProductCard } from './ProductCard'
-import { products } from '../data/products'
+import { apiClient, type Product } from '../lib/api'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const featuredProducts = products.slice(0, 8)
-
 export function FeaturedProducts() {
   const sectionRef = useRef<HTMLElement>(null)
+  const [products, setProducts] = useState<Product[]>([])
+  useEffect(() => { void apiClient.products().then(({ products }) => setProducts(products.slice(0, 8))) }, [])
 
   useLayoutEffect(() => {
     const context = gsap.context(() => {
@@ -33,8 +33,8 @@ export function FeaturedProducts() {
           <h2 id="featured-products-heading" className="font-display text-3xl font-extrabold tracking-[-0.05em] text-ink sm:text-4xl">Featured Products</h2>
           <p className="mt-3 text-[15px] text-ink/55">Our best sellers for this week!</p>
         </div>
-        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {featuredProducts.map((product, index) => (
+        <div className="mt-12 grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4 lg:grid-cols-4 lg:gap-5">
+          {products.map((product, index) => (
             <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, amount: 0.15 }} transition={{ duration: 0.35, delay: index * 0.04 }}>
               <ProductCard product={product} />
             </motion.div>

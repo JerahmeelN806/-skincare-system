@@ -5,6 +5,7 @@ import { Nav } from './Nav'
 import { SearchBar } from './SearchBar'
 import { Link } from 'react-router-dom'
 import { useCartStore } from '../store/cartStore'
+import { useAuthStore } from '../store/authStore'
 
 export interface HeaderProps {
   navItems?: string[]
@@ -80,8 +81,11 @@ function Icon({ name, size = 20 }: IconProps) {
 export function Header({ navItems = defaultNavItems }: HeaderProps) {
   const [menuOpen, setMenuOpen] = useState(false)
   const totalItems = useCartStore((state) => state.totalItems)
+  const { user, token, logout } = useAuthStore()
+  const avatarInitial = token && user?.email ? user.email.trim().charAt(0).toUpperCase() : ''
 
   const cartButton = (mobile = false) => <Link to="/cart" className={`relative grid h-10 w-10 place-items-center rounded-full transition ${mobile ? '' : 'hover:bg-cream'}`} aria-label={`Shopping cart${totalItems ? `, ${totalItems} items` : ''}`}><Icon name="bag" />{totalItems > 0 && <span className="absolute -right-1 -top-1 grid min-w-5 h-5 place-items-center rounded-full bg-red-500 px-1 text-[10px] font-bold leading-none text-white">{totalItems > 99 ? '99+' : totalItems}</span>}</Link>
+  const accountButton = (mobile = false) => <Link to={token ? '/orders' : '/login'} title={user?.email} className={`grid h-10 w-10 place-items-center rounded-full transition ${avatarInitial ? 'bg-sage text-sm font-bold text-white hover:bg-sage/90' : mobile ? '' : 'hover:bg-cream'}`} aria-label={token ? `Account for ${user?.email || user?.fullName || 'user'}` : 'Sign in'}>{avatarInitial ? <span aria-hidden="true">{avatarInitial}</span> : <Icon name="user" />}</Link>
 
   return (
     <header className="border-b border-black/[0.07] bg-white">
@@ -101,7 +105,7 @@ export function Header({ navItems = defaultNavItems }: HeaderProps) {
             {...interaction}
             className="order-2 rounded-full bg-sage px-4 py-2.5 text-sm font-semibold text-white shadow-sm sm:order-none sm:px-5"
           >
-            <Link to="/login" className="block">Sign In</Link>
+            {token ? <button onClick={logout} className="block">Sign Out</button> : <Link to="/login" className="block">Sign In</Link>}
           </motion.div>
 
           {/* Main Navigation */}
@@ -111,17 +115,13 @@ export function Header({ navItems = defaultNavItems }: HeaderProps) {
           <div className="hidden items-center gap-3 md:flex">
             <SearchBar />
             {cartButton()}
-            <button className="grid h-10 w-10 place-items-center rounded-full transition hover:bg-cream" aria-label="Account">
-              <Icon name="user" />
-            </button>
+            {accountButton()}
           </div>
 
           {/* Mobile Control Panel */}
           <div className="flex items-center gap-1 md:hidden">
             {cartButton(true)}
-            <button className="grid h-10 w-10 place-items-center rounded-full" aria-label="Account">
-              <Icon name="user" />
-            </button>
+            {accountButton(true)}
             <button
               onClick={() => setMenuOpen((open) => !open)}
               className="grid h-10 w-10 place-items-center rounded-full bg-cream text-ink"

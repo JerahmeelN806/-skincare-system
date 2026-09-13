@@ -15,15 +15,19 @@ export type CheckoutDetails = {
   city: string; state: string; postalCode: string; country: string
 }
 
+export type ShippingInfo = Omit<CheckoutDetails, 'password'>
+
 type CartStore = {
   items: CartItem[]
   subtotal: number
   totalItems: number
   checkoutDetails: CheckoutDetails | null
+  shippingInfo: ShippingInfo | null
   addItem: (product: CartProduct, quantity?: number) => void
   removeItem: (id: string) => void
   updateQuantity: (id: string, quantity: number) => void
   saveCheckoutDetails: (details: CheckoutDetails) => void
+  saveShippingInfo: (details: ShippingInfo) => void
 }
 
 export const useCartStore = create<CartStore>()(
@@ -33,6 +37,7 @@ export const useCartStore = create<CartStore>()(
       subtotal: 0,
       totalItems: 0,
       checkoutDetails: null,
+      shippingInfo: null,
       addItem: (product, quantity = 1) => set((state) => {
         const safeQuantity = Math.max(1, quantity)
         const existingItem = state.items.find((item) => item.id === product.id)
@@ -55,8 +60,9 @@ export const useCartStore = create<CartStore>()(
         return { items, subtotal: getCartSubtotal(items), totalItems: getCartTotalItems(items) }
       }),
       saveCheckoutDetails: (checkoutDetails) => set({ checkoutDetails }),
+      saveShippingInfo: (shippingInfo) => set({ shippingInfo }),
     }),
-    { name: 'skincare-cart', partialize: (state) => ({ items: state.items, subtotal: state.subtotal, totalItems: state.totalItems, checkoutDetails: state.checkoutDetails }) },
+    { name: 'skincare-cart', partialize: (state) => ({ items: state.items, subtotal: state.subtotal, totalItems: state.totalItems, checkoutDetails: state.checkoutDetails, shippingInfo: state.shippingInfo }) },
   ),
 )
 
